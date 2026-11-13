@@ -1,6 +1,8 @@
 /* "Departure Board" design skin for this page. Every rule is scoped under :root[data-skin="alt"].
    Transit signage rooted in Toronto: a Solari split-flap ferry board, TTC line-colour trim bands,
-   black station signage chrome. Day = vitrolite station tile wall; Night = platform at night with amber LED accents. */
+   black station signage chrome. Day = vitrolite station tile wall; Night = platform at night with amber LED accents.
+   In the console layout the left rail is a black station sign whose topics are line bullets
+   (1 ferry, 2 Bike Share, 4 TTC, 5 weather), and every overview tile wears a station-sign header. */
 
 /* ================================================================== tokens */
 :root[data-skin="alt"] {
@@ -37,6 +39,8 @@
   --ferry: #a87600;   /* Line 1 yellow, deepened to ochre for >=3:1 on the tile wall */
   --bike: #00873a;    /* Line 2 green */
   --ttc: #d0261a;     /* TTC red */
+  --wx: #c25700;      /* Line 5 orange, deepened */
+  --rain: #0074b8;
   --line1: #a87600; --line2: #00873a; --line4: #A21A68; --line3: #0074b8;
 }
 
@@ -61,7 +65,7 @@
     --db-board-glow: 0 0 0 1px rgba(255, 182, 39, 0.10), 0 0 46px -6px rgba(255, 170, 30, 0.20), 0 18px 40px -20px rgba(0, 0, 0, 0.9);
   }
   :root[data-skin="alt"]:not([data-theme="light"]) body.toronto {
-    --accent: #F8C300; --ferry: #F8C300; --bike: #22b35f; --ttc: #ff5a4a;
+    --accent: #F8C300; --ferry: #F8C300; --bike: #22b35f; --ttc: #ff5a4a; --wx: #ff8f1f; --rain: #3aa0e0;
     --line1: #F8C300; --line2: #22b35f; --line4: #d65aa0; --line3: #3aa0e0;
   }
 }
@@ -85,7 +89,7 @@
   --db-board-glow: 0 0 0 1px rgba(255, 182, 39, 0.10), 0 0 46px -6px rgba(255, 170, 30, 0.20), 0 18px 40px -20px rgba(0, 0, 0, 0.9);
 }
 :root[data-skin="alt"][data-theme="dark"] body.toronto {
-  --accent: #F8C300; --ferry: #F8C300; --bike: #22b35f; --ttc: #ff5a4a;
+  --accent: #F8C300; --ferry: #F8C300; --bike: #22b35f; --ttc: #ff5a4a; --wx: #ff8f1f; --rain: #3aa0e0;
   --line1: #F8C300; --line2: #22b35f; --line4: #d65aa0; --line3: #3aa0e0;
 }
 
@@ -103,12 +107,12 @@
 :root[data-skin="alt"] body.toronto h2,
 :root[data-skin="alt"] body.toronto h3 { letter-spacing: 0; }
 
-/* section line colours: ferry = Line 1 yellow, model card = Line 5 orange, bikes = Line 2 green, TTC = Line 4 purple */
-:root[data-skin="alt"] body.toronto main > section { --trim: var(--l1); --trim-ink: #111; --trim-n: "1"; }
-:root[data-skin="alt"] body.toronto main > section:nth-of-type(2) { --trim: var(--l5); --trim-ink: #111; --trim-n: "5"; }
-:root[data-skin="alt"] body.toronto main > section:nth-of-type(3) { --trim: var(--l2); --trim-ink: #fff; --trim-n: "2"; }
-:root[data-skin="alt"] body.toronto main > section:nth-of-type(4) { --trim: var(--l4); --trim-ink: #fff; --trim-n: "4"; }
-:root[data-skin="alt"] body.toronto main > section:nth-of-type(5) { --trim: var(--ink); --trim-ink: var(--page); --trim-n: ""; }
+/* topic line colours: ferry = Line 1 yellow, bikes = Line 2 green, TTC = Line 4 purple, weather = Line 5 orange */
+:root[data-skin="alt"] body.toronto [data-topic] { --trim: var(--ink); --trim-ink: var(--page); --trim-n: ""; }
+:root[data-skin="alt"] body.toronto [data-topic="ferry"] { --trim: var(--l1); --trim-ink: #111; --trim-n: "1"; }
+:root[data-skin="alt"] body.toronto [data-topic="bike"] { --trim: var(--l2); --trim-ink: #fff; --trim-n: "2"; }
+:root[data-skin="alt"] body.toronto [data-topic="ttc"] { --trim: var(--l4); --trim-ink: #fff; --trim-n: "4"; }
+:root[data-skin="alt"] body.toronto [data-topic="weather"] { --trim: var(--l5); --trim-ink: #111; --trim-n: "5"; }
 
 /* ================================================================== top bar: black station signage */
 :root[data-skin="alt"] body.toronto .topbar {
@@ -154,7 +158,7 @@
   color: #a8a69c;
 }
 :root[data-skin="alt"] .db-strip-in {
-  max-width: 1240px; margin: 0 auto; padding: 7px clamp(16px, 4vw, 40px);
+  padding: 7px clamp(16px, 2vw, 24px);
   display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 22px;
   font: 600 11.5px/1.3 var(--db-cond); letter-spacing: 0.1em; text-transform: uppercase;
 }
@@ -180,56 +184,137 @@
 :root[data-skin="alt"] [data-level="packed"] { --lvl: #ff4d4d; }
 :root[data-skin="alt"] .db-strip s[data-level] { color: var(--lvl); }
 
-/* ================================================================== hero + section trim bands */
-:root[data-skin="alt"] body.toronto .hero { background: none; padding-top: 40px; }
-:root[data-skin="alt"] body.toronto .eyebrow {
-  display: flex; align-items: center; gap: 10px;
+/* ================================================================== the rail: a black station sign with line bullets */
+:root[data-skin="alt"] body.toronto .cx-nav {
+  background: var(--db-sign); color: var(--db-sign-ink); border-right: 0;
+  box-shadow: inset -4px 0 0 #2a2b2f;
+}
+:root[data-skin="alt"] body.toronto .cx-topic {
+  border-radius: 0; color: #c9c7bd; padding: 8px 34px 8px 8px; gap: 10px;
+  font: 700 15.5px/1.1 var(--db-cond); letter-spacing: 0.08em; text-transform: uppercase;
+}
+:root[data-skin="alt"] body.toronto .cx-topic:hover { background: rgba(255, 255, 255, 0.06); color: #fff; }
+:root[data-skin="alt"] body.toronto .cx-group.active > .cx-topic { background: rgba(255, 255, 255, 0.07); color: #fff; box-shadow: inset 4px 0 0 var(--trim); }
+:root[data-skin="alt"] body.toronto .cx-dot {
+  width: 22px; height: 22px; border-radius: 50%; display: inline-grid; place-items: center;
+  background: var(--trim); color: var(--trim-ink); font: 700 13px/1 var(--db-cond); letter-spacing: 0;
+}
+:root[data-skin="alt"] body.toronto .cx-dot::before { content: var(--trim-n); }
+:root[data-skin="alt"] body.toronto .cx-group[data-topic="overview"] .cx-dot {
+  border-radius: 50%; background: conic-gradient(var(--l1) 0 25%, var(--l2) 0 50%, var(--l4) 0 75%, var(--l5) 0);
+}
+:root[data-skin="alt"] body.toronto .cx-group[data-topic="about"] .cx-dot { background: transparent; box-shadow: inset 0 0 0 2px #8d8b82; }
+:root[data-skin="alt"] body.toronto .cx-group[data-topic="about"] { border-top-color: #2c2d31; }
+:root[data-skin="alt"] body.toronto .cx-badge { font: 500 11.5px/1 var(--mono); letter-spacing: 0; color: #8d8b82; text-transform: none; }
+:root[data-skin="alt"] body.toronto .cx-group.active .cx-badge { color: var(--db-amber); text-shadow: 0 0 8px rgba(255, 170, 30, 0.4); }
+:root[data-skin="alt"] body.toronto .cx-caret { border-radius: 0; color: #8d8b82; top: 6px; }
+:root[data-skin="alt"] body.toronto .cx-caret:hover { background: rgba(255, 255, 255, 0.08); color: var(--db-led); }
+:root[data-skin="alt"] body.toronto .cx-subs { border-left: 2px solid var(--trim); margin-left: 18px; }
+:root[data-skin="alt"] body.toronto .cx-subs a {
+  border-radius: 0; color: #a8a69c; font: 600 13.5px/1.2 var(--db-cond); letter-spacing: 0.07em; text-transform: uppercase;
+}
+:root[data-skin="alt"] body.toronto .cx-subs a:hover { background: rgba(255, 255, 255, 0.06); color: #fff; }
+:root[data-skin="alt"] body.toronto .cx-subs a[aria-current="page"] { background: rgba(255, 255, 255, 0.08); color: var(--db-led); box-shadow: none; }
+:root[data-skin="alt"] body.toronto .cx-subs a[aria-current="page"]::before { content: "\25B8\00a0"; }
+:root[data-skin="alt"] body.toronto .cx-foot { border-top: 1px solid #2c2d31; color: #8d8b82; font: 600 12px/1.45 var(--db-cond); letter-spacing: 0.06em; text-transform: uppercase; }
+:root[data-skin="alt"] body.toronto .cx-foot .note { color: #8d8b82; font: 500 11px/1.4 var(--mono); text-transform: none; letter-spacing: 0; }
+:root[data-skin="alt"] .db-flavour { color: #c9c7bd; font: italic 400 12.5px/1.45 var(--font); text-transform: none; letter-spacing: 0.01em; }
+:root[data-skin="alt"] .db-flavour::before { content: "\25B8\00a0"; color: var(--db-led); font-style: normal; }
+
+/* ================================================================== view header: trim band + display headline */
+:root[data-skin="alt"] body.toronto .cx-title .eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
   background: var(--trim); color: var(--trim-ink);
   border-top: 3px solid var(--db-sign); border-bottom: 3px solid var(--db-sign);
-  padding: 6px 12px 4px;
-  font: 400 21px/1 var(--db-display); letter-spacing: 0.09em; text-transform: uppercase;
+  padding: 4px 10px 2px;
+  font: 400 17px/1 var(--db-display); letter-spacing: 0.09em; text-transform: uppercase;
 }
-:root[data-skin="alt"] body.toronto .eyebrow::before {
+:root[data-skin="alt"] body.toronto .cx-title .eyebrow::before {
   content: var(--trim-n); flex: none;
-  display: inline-grid; place-items: center; width: 24px; height: 24px; margin-top: -2px; border-radius: 50%;
-  background: var(--db-sign); color: var(--trim); font: 700 15px/1 var(--db-cond); letter-spacing: 0;
+  display: inline-grid; place-items: center; width: 19px; height: 19px; margin-top: -2px; border-radius: 50%;
+  background: var(--db-sign); color: var(--trim); font: 700 12px/1 var(--db-cond); letter-spacing: 0;
 }
-:root[data-skin="alt"] body.toronto .hero-title {
-  font: 400 clamp(46px, 7.2vw, 96px)/0.92 var(--db-display); letter-spacing: 0.01em; text-transform: uppercase;
-  max-width: 24ch; margin: 22px 0 14px;
+:root[data-skin="alt"] body.toronto [data-topic="overview"] .cx-title .eyebrow::before,
+:root[data-skin="alt"] body.toronto [data-view="overview"] .cx-title .eyebrow::before,
+:root[data-skin="alt"] body.toronto [data-view="about"] .cx-title .eyebrow::before { display: none; }
+:root[data-skin="alt"] body.toronto [data-view="overview"] .cx-title .eyebrow {
+  background: var(--db-sign); color: var(--db-amber); border-color: var(--db-sign); font-family: var(--db-cond); font-weight: 700; font-size: 13px; letter-spacing: 0.14em; padding: 5px 10px 4px;
 }
-:root[data-skin="alt"] body.toronto .lede { font-size: 17px; color: var(--ink-2); }
-:root[data-skin="alt"] body.toronto section.block { padding-top: 64px; }
-:root[data-skin="alt"] body.toronto .section-head h2 {
-  font: 400 clamp(34px, 4.4vw, 52px)/0.95 var(--db-display); letter-spacing: 0.015em; text-transform: uppercase; margin-top: 16px;
+:root[data-skin="alt"] body.toronto .cx-title h1 {
+  font: 400 34px/0.95 var(--db-display); letter-spacing: 0.02em; text-transform: uppercase; margin-top: 8px;
 }
-:root[data-skin="alt"] body.toronto .section-head > div { flex: 1 1 100%; min-width: 0; }
-:root[data-skin="alt"] body.toronto .section-head p { color: var(--ink-2); }
+:root[data-skin="alt"] body.toronto .cx-head-note { font-size: 14px; color: var(--ink-2); }
+:root[data-skin="alt"] body.toronto .cx-kpi { border-left-color: var(--border); }
+:root[data-skin="alt"] body.toronto .cx-kpi:first-child { border-left: 4px solid var(--trim); }
+:root[data-skin="alt"] body.toronto .cx-kpi-l { font: 700 11.5px/1.2 var(--db-cond); letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-2); }
+:root[data-skin="alt"] body.toronto .cx-kpi-v { font: 500 21px/1.25 var(--mono); letter-spacing: -0.02em; }
+:root[data-skin="alt"] body.toronto .cx-kpi-s { font-size: 12px; color: var(--muted); }
+:root[data-skin="alt"] body.toronto .cx-lede { font-size: 13px; }
 
-/* ================================================================== the departure board */
+/* ================================================================== overview tiles: each wears a station-sign header */
+:root[data-skin="alt"] body.toronto .cx-tile {
+  border-radius: 0; border: 1px solid var(--border); border-top: 0; box-shadow: var(--shadow); background: var(--surface);
+}
+:root[data-skin="alt"] body.toronto .cx-tile:hover { box-shadow: 0 0 0 2px var(--trim), var(--shadow); }
+:root[data-skin="alt"] body.toronto .cx-tile-head {
+  margin: -14px -16px 0; padding: 9px 14px 8px; background: var(--db-sign); color: #fff;
+  border-bottom: 4px solid var(--trim);
+}
+:root[data-skin="alt"] body.toronto .cx-tile-dot {
+  width: 24px; height: 24px; display: inline-grid; place-items: center; background: var(--trim); color: var(--trim-ink);
+  font: 700 14px/1 var(--db-cond);
+}
+:root[data-skin="alt"] body.toronto .cx-tile-dot::before { content: var(--trim-n); }
+:root[data-skin="alt"] body.toronto .cx-tile-name { color: #fff; font: 400 23px/1 var(--db-display); letter-spacing: 0.07em; text-transform: uppercase; padding-top: 2px; }
+:root[data-skin="alt"] body.toronto .cx-tile-live { color: #a8a69c; font: 600 11px/1 var(--db-cond); letter-spacing: 0.12em; text-transform: uppercase; }
+:root[data-skin="alt"] body.toronto .cx-tile-live:not(:empty)::before { background: #3fd17a; box-shadow: 0 0 6px #3fd17a; animation: db-pulse 2s ease-in-out infinite; }
+:root[data-skin="alt"] body.toronto .cx-tile-go { color: #a8a69c; }
+:root[data-skin="alt"] body.toronto .cx-tile:hover .cx-tile-go { color: var(--db-led); }
+:root[data-skin="alt"] body.toronto .cx-tk b { font: 500 19px/1.25 var(--mono); letter-spacing: -0.02em; }
+:root[data-skin="alt"] body.toronto .cx-tk:first-child b { font: 500 30px/1.15 var(--mono); }
+:root[data-skin="alt"] body.toronto .cx-tk span { font: 600 12px/1.3 var(--db-cond); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-2); }
+:root[data-skin="alt"] body.toronto .cx-tk-sw { border-radius: 0; }
+:root[data-skin="alt"] body.toronto .cx-tk b.txt,
+:root[data-skin="alt"] body.toronto .cx-kpi-v.txt { font: 700 20px/1.2 var(--db-cond); letter-spacing: 0.04em; text-transform: uppercase; }
+:root[data-skin="alt"] body.toronto .cx-tk:first-child b.txt { font-size: 28px; }
+:root[data-skin="alt"] body.toronto .cx-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+:root[data-skin="alt"] body.toronto .cx-tile-links { border-top: 1px solid var(--border); }
+:root[data-skin="alt"] body.toronto .cx-tile-links a {
+  border-radius: 0; background: transparent; border: 1px solid var(--border); padding: 3px 8px 2px;
+  font: 700 12px/1.2 var(--db-cond); letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-2);
+}
+:root[data-skin="alt"] body.toronto .cx-tile-links a:hover { background: var(--db-sign); color: var(--db-led); border-color: var(--db-sign); }
+@media (prefers-color-scheme: dark) {
+  :root[data-skin="alt"]:not([data-theme="light"]) body.toronto .cx-tk:first-child b,
+  :root[data-skin="alt"]:not([data-theme="light"]) body.toronto .cx-kpi:first-child .cx-kpi-v { color: var(--db-led); text-shadow: 0 0 14px rgba(255, 190, 30, 0.3); }
+  :root[data-skin="alt"]:not([data-theme="light"]) body.toronto .cx-tile-head { box-shadow: inset 0 -1px 0 #000; }
+}
+:root[data-skin="alt"][data-theme="dark"] body.toronto .cx-tk:first-child b,
+:root[data-skin="alt"][data-theme="dark"] body.toronto .cx-kpi:first-child .cx-kpi-v { color: var(--db-led); text-shadow: 0 0 14px rgba(255, 190, 30, 0.3); }
+
+/* ================================================================== the departure board (ferry → This week) */
 :root[data-skin="alt"] .db-board {
-  margin-top: 26px;
   background: var(--db-board);
   border: 1px solid #000;
   outline: 6px solid #2a2b2f; outline-offset: 0;
   box-shadow: var(--db-board-glow);
   color: #f4f2ea;
-  margin-left: 6px; margin-right: 6px;
+  margin: 6px 6px 4px;
 }
 :root[data-skin="alt"] .db-head {
   display: flex; align-items: center; justify-content: space-between; gap: 16px;
-  padding: 12px 16px 10px; border-bottom: 2px solid var(--l1);
+  padding: 10px 16px 8px; border-bottom: 2px solid var(--l1);
   background: linear-gradient(#1b1c1f, #121315);
 }
 :root[data-skin="alt"] .db-head-l { display: flex; align-items: center; gap: 12px; min-width: 0; }
-:root[data-skin="alt"] .db-head b { display: block; font: 400 26px/1 var(--db-display); letter-spacing: 0.07em; text-transform: uppercase; color: #fff; }
+:root[data-skin="alt"] .db-head b { display: block; font: 400 24px/1 var(--db-display); letter-spacing: 0.07em; text-transform: uppercase; color: #fff; }
 :root[data-skin="alt"] .db-head small { display: block; margin-top: 3px; font: 600 12px/1.2 var(--db-cond); letter-spacing: 0.14em; text-transform: uppercase; color: #a8a69c; }
 :root[data-skin="alt"] .db-bullet {
-  flex: none; display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 50%;
-  background: var(--l1); color: #111; font: 700 21px/1 var(--db-cond);
+  flex: none; display: inline-grid; place-items: center; width: 32px; height: 32px; border-radius: 50%;
+  background: var(--l1); color: #111; font: 700 20px/1 var(--db-cond);
 }
 :root[data-skin="alt"] .db-clock {
-  font: 500 28px/1 var(--mono); color: var(--db-amber); letter-spacing: 0.04em;
+  font: 500 24px/1 var(--mono); color: var(--db-amber); letter-spacing: 0.04em;
   text-shadow: 0 0 10px rgba(255, 170, 30, 0.55); padding: 4px 10px; background: #08090a; border: 1px solid #000;
 }
 :root[data-skin="alt"] .db-cols,
@@ -240,7 +325,7 @@
   padding-left: 22px; padding-right: 16px;
 }
 :root[data-skin="alt"] .db-cols {
-  padding-top: 8px; padding-bottom: 6px; border-bottom: 1px solid #2c2d31;
+  padding-top: 7px; padding-bottom: 5px; border-bottom: 1px solid #2c2d31;
   font: 600 11px/1 var(--db-cond); letter-spacing: 0.16em; text-transform: uppercase; color: #8d8b82;
 }
 :root[data-skin="alt"] .db-c-name { grid-area: name; } :root[data-skin="alt"] .db-c-type { grid-area: type; }
@@ -250,7 +335,7 @@
 :root[data-skin="alt"] body.toronto .db-board .days { display: block; margin: 0; }
 :root[data-skin="alt"] body.toronto .db-board .day {
   position: relative; width: 100%;
-  padding-top: 7px; padding-bottom: 7px;
+  padding-top: 5px; padding-bottom: 5px;
   background: transparent; color: #f4f2ea;
   border: 0; border-bottom: 1px solid #25262a; border-radius: 0; box-shadow: none;
   transition: background-color .15s;
@@ -265,11 +350,11 @@
   filter: drop-shadow(0 0 4px rgba(255, 190, 30, 0.6));
 }
 :root[data-skin="alt"] body.toronto .db-board .day .db-meta { display: contents; }
-:root[data-skin="alt"] body.toronto .db-board .day .dname { grid-area: name; font-size: 18px; }
-:root[data-skin="alt"] body.toronto .db-board .day .riders { grid-area: riders; margin: 0; font-size: 24px; color: var(--db-led); }
-:root[data-skin="alt"] body.toronto .db-board .day .crowd { grid-area: crowd; margin: 0; padding: 0; background: none; border-radius: 0; box-shadow: none !important; font-size: 15px; color: var(--lvl, #f4f2ea); justify-self: start; }
+:root[data-skin="alt"] body.toronto .db-board .day .dname { grid-area: name; font-size: 17px; }
+:root[data-skin="alt"] body.toronto .db-board .day .riders { grid-area: riders; margin: 0; font-size: 22px; color: var(--db-led); }
+:root[data-skin="alt"] body.toronto .db-board .day .crowd { grid-area: crowd; margin: 0; padding: 0; background: none; border-radius: 0; box-shadow: none !important; font-size: 14px; color: var(--lvl, #f4f2ea); justify-self: start; }
 :root[data-skin="alt"] body.toronto .db-board .day .db-type {
-  grid-area: type; color: #c9c7bd; font: 600 13px/1.15 var(--db-cond); letter-spacing: 0.08em; text-transform: uppercase;
+  grid-area: type; color: #c9c7bd; font: 600 13px/1.15 var(--db-cond); letter-spacing: 0.08em; text-transform: uppercase; white-space: normal;
 }
 :root[data-skin="alt"] body.toronto .db-board .day .db-range { grid-area: range; color: var(--db-amber); font: 500 12.5px/1 var(--mono); opacity: 0.9; font-variant-numeric: tabular-nums; }
 :root[data-skin="alt"] body.toronto .db-board .day .wx {
@@ -307,11 +392,11 @@
   display: flex; align-items: stretch; border-top: 1px solid #2c2d31; background: #0a0b0c;
   font: 600 13px/1 var(--db-cond); letter-spacing: 0.1em; text-transform: uppercase;
 }
-:root[data-skin="alt"] .db-tag { flex: none; padding: 9px 12px 8px; background: var(--l1); color: #111; font-weight: 700; }
+:root[data-skin="alt"] .db-tag { flex: none; padding: 8px 12px 7px; background: var(--l1); color: #111; font-weight: 700; }
 :root[data-skin="alt"] .db-tick-win { position: relative; flex: 1; min-width: 0; overflow: hidden;
   mask-image: linear-gradient(90deg, transparent, #000 24px, #000 calc(100% - 24px), transparent); }
 :root[data-skin="alt"] .db-tick-run {
-  display: flex; width: max-content; padding: 9px 0 8px; color: var(--db-amber);
+  display: flex; width: max-content; padding: 8px 0 7px; color: var(--db-amber);
   text-shadow: 0 0 8px rgba(255, 170, 30, 0.4);
   animation: db-tick var(--dur, 60s) linear infinite;
 }
@@ -321,29 +406,42 @@
 /* ================================================================== cards, panels, KPIs */
 :root[data-skin="alt"] body.toronto .card {
   border-radius: 0; border: 1px solid var(--border); background: var(--surface); box-shadow: var(--shadow);
-  padding: 16px 18px;
+  padding: 14px 16px;
 }
-:root[data-skin="alt"] body.toronto .grid { gap: 12px; }
-:root[data-skin="alt"] body.toronto .card > .card-title:first-child {
-  margin: -16px -18px 12px; padding: 9px 18px 7px;
+:root[data-skin="alt"] body.toronto .card > .cx-card-title:first-child {
+  margin: -14px -16px 10px; padding: 8px 16px 6px;
   border-top: 4px solid var(--trim); border-bottom: 1px solid var(--border);
   background: color-mix(in oklab, var(--trim) 9%, var(--surface));
   font: 700 15px/1.2 var(--db-cond); letter-spacing: 0.08em; text-transform: uppercase;
 }
-:root[data-skin="alt"] body.toronto .card-sub { font-size: 13px; color: var(--muted); }
-:root[data-skin="alt"] body.toronto .day-detail { margin-top: 22px; }
+:root[data-skin="alt"] body.toronto .cx-card-sub { font-size: 13px; color: var(--muted); }
 :root[data-skin="alt"] body.toronto .metric { border-left: 4px solid var(--trim); }
 :root[data-skin="alt"] body.toronto .metric .label {
   font: 700 12.5px/1.2 var(--db-cond); letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-2);
 }
 :root[data-skin="alt"] body.toronto .metric .value {
-  font: 700 30px/1.1 var(--mono); letter-spacing: -0.02em; margin-top: 6px; font-variant-numeric: tabular-nums;
+  font: 700 26px/1.1 var(--mono); letter-spacing: -0.02em; margin-top: 4px; font-variant-numeric: tabular-nums;
 }
 :root[data-skin="alt"] body.toronto .metric .sub { font-size: 13px; }
 @media (prefers-color-scheme: dark) {
   :root[data-skin="alt"]:not([data-theme="light"]) body.toronto .metric .value { color: var(--db-led); text-shadow: 0 0 14px rgba(255, 190, 30, 0.3); }
 }
 :root[data-skin="alt"][data-theme="dark"] body.toronto .metric .value { color: var(--db-led); text-shadow: 0 0 14px rgba(255, 190, 30, 0.3); }
+
+/* classic day cards / multiples / line cards / ranked lists go square */
+:root[data-skin="alt"] body.toronto .mult { border-radius: 0; }
+:root[data-skin="alt"] body.toronto .mult[aria-pressed="true"] { outline: 2px solid var(--trim); }
+:root[data-skin="alt"] body.toronto .mult-h b { font: 700 13.5px/1.2 var(--db-cond); letter-spacing: 0.08em; text-transform: uppercase; }
+:root[data-skin="alt"] body.toronto .mult-h span { font: 600 11px/1.2 var(--db-cond); letter-spacing: 0.08em; text-transform: uppercase; }
+:root[data-skin="alt"] body.toronto .line-card { border-radius: 0; }
+:root[data-skin="alt"] body.toronto .line-name { font: 700 15px/1.1 var(--db-cond); letter-spacing: 0.06em; text-transform: uppercase; }
+:root[data-skin="alt"] body.toronto .line-bullet { font: 700 15px/1 var(--db-cond); }
+:root[data-skin="alt"] body.toronto .line-stat b,
+:root[data-skin="alt"] body.toronto .records li b,
+:root[data-skin="alt"] body.toronto .ranked li b { font-family: var(--mono); font-weight: 500; }
+:root[data-skin="alt"] body.toronto .rec-bar,
+:root[data-skin="alt"] body.toronto .rec-bar i { border-radius: 0; }
+:root[data-skin="alt"] body.toronto .ranked li > a { border-radius: 0; }
 
 /* prose cards */
 :root[data-skin="alt"] body.toronto .prose h3 { font: 400 28px/1 var(--db-display); letter-spacing: 0.04em; text-transform: uppercase; }
@@ -355,13 +453,14 @@
 /* ================================================================== charts */
 :root[data-skin="alt"] body.toronto .chart .grid line { stroke-dasharray: 1 3; }
 :root[data-skin="alt"] body.toronto .chart .axis text,
-:root[data-skin="alt"] body.toronto .chart .tick text { font-family: var(--mono); font-size: 10.5px; }
+:root[data-skin="alt"] body.toronto .chart .tick text,
+:root[data-skin="alt"] body.toronto .chart .axis-t { font-family: var(--mono); font-size: 10.5px; }
 :root[data-skin="alt"] body.toronto .chart .label { font-family: var(--font); font-size: 12.5px; font-weight: 500; }
 :root[data-skin="alt"] body.toronto .chart .label.strong { font-family: var(--mono); font-weight: 500; }
 :root[data-skin="alt"] body.toronto .chart svg path:not([style*="none"]),
 :root[data-skin="alt"] body.toronto .chart svg rect { transition: filter .12s, opacity .12s; }
 :root[data-skin="alt"] body.toronto .chart svg path.b:hover,
-:root[data-skin="alt"] body.toronto .chart svg rect:hover { filter: brightness(1.15) drop-shadow(0 0 4px color-mix(in srgb, var(--accent) 60%, transparent)); }
+:root[data-skin="alt"] body.toronto .chart svg rect.hcell:hover { filter: brightness(1.15) drop-shadow(0 0 4px color-mix(in srgb, var(--accent) 60%, transparent)); }
 :root[data-skin="alt"] body.toronto .legend { font: 600 12.5px/1.3 var(--db-cond); letter-spacing: 0.06em; text-transform: uppercase; }
 :root[data-skin="alt"] body.toronto .legend .line { height: 3px; border-radius: 0; }
 :root[data-skin="alt"] body.toronto .legend .band { border-radius: 0; }
@@ -398,24 +497,61 @@
 :root[data-skin="alt"] body.toronto .ramp-labels { font: 600 11px/1 var(--db-cond); letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-2); }
 :root[data-skin="alt"] body.toronto .maplibregl-ctrl-group { border-radius: 0; box-shadow: 0 0 0 1px var(--db-sign); }
 :root[data-skin="alt"] body.toronto .maplibregl-ctrl-attrib { font-family: var(--db-cond); }
-@media (max-width: 900px) {
-  :root[data-skin="alt"] body.toronto .panel { border-left: 0; border-top: 2px solid var(--db-sign); }
-}
 
-/* ================================================================== footer */
-:root[data-skin="alt"] body.toronto footer.site {
-  margin-top: 40px; padding-top: 20px; color: var(--muted);
-  background: linear-gradient(90deg, var(--l1) 0 25%, var(--l2) 25% 50%, var(--l4) 50% 75%, var(--l5) 75% 100%) top / 100% 4px no-repeat;
-  font: 600 13px/1.5 var(--db-cond); letter-spacing: 0.08em; text-transform: uppercase;
+/* ================================================================== detail drawer: a station sign that slides out */
+:root[data-skin="alt"] body.toronto .cx-drawer { border-top: 0; border-left: 2px solid var(--db-sign); background: var(--surface); }
+:root[data-skin="alt"] body.toronto .cx-drawer-head { background: var(--db-sign); color: #fff; border-bottom: 4px solid var(--trim); }
+:root[data-skin="alt"] body.toronto .cx-drawer-head .eyebrow { color: var(--db-amber); font: 700 12px/1.2 var(--db-cond); letter-spacing: 0.14em; }
+:root[data-skin="alt"] body.toronto .cx-drawer-head h2 { font: 400 27px/1 var(--db-display); letter-spacing: 0.04em; text-transform: uppercase; }
+:root[data-skin="alt"] body.toronto .cx-drawer-x { color: #e8e6dc; }
+:root[data-skin="alt"] body.toronto .cx-dstats > div { border-radius: 0; background: var(--db-board); border-left: 3px solid var(--trim); }
+:root[data-skin="alt"] body.toronto .cx-dstats b { font: 500 19px/1.2 var(--mono); color: var(--db-amber); text-shadow: 0 0 8px rgba(255, 170, 30, 0.3); }
+:root[data-skin="alt"] body.toronto .cx-dstats.four b { font-size: 16px; }
+:root[data-skin="alt"] body.toronto .cx-dstats span { color: #c9c7bd; font: 600 11.5px/1.25 var(--db-cond); letter-spacing: 0.06em; text-transform: uppercase; }
+:root[data-skin="alt"] body.toronto .cx-dsec h3,
+:root[data-skin="alt"] body.toronto .cx-dsub-h { font: 700 13px/1.2 var(--db-cond); letter-spacing: 0.1em; text-transform: uppercase; }
+:root[data-skin="alt"] body.toronto .cx-fillbar,
+:root[data-skin="alt"] body.toronto .cx-fillbar i { border-radius: 0; }
+:root[data-skin="alt"] body.toronto .cx-dlink { color: var(--ink); font: 700 13px/1.2 var(--db-cond); letter-spacing: 0.1em; text-transform: uppercase; box-shadow: inset 0 -3px 0 var(--trim); align-self: flex-start; padding-bottom: 2px; }
+
+/* ================================================================== one-screen fit: tighten the board and headline on desktop */
+@media (min-width: 1100px) {
+  :root[data-skin="alt"] body.toronto .tc-week { gap: 4px; }
+  :root[data-skin="alt"] body.toronto .pane-week .cx-lede { display: none; } /* the board's head says it */
 }
-:root[data-skin="alt"] .db-flavour { margin-top: 6px; color: var(--ink-2); font-style: italic; text-transform: none; letter-spacing: 0.02em; font-family: var(--font); font-weight: 400; }
-:root[data-skin="alt"] .db-flavour::before { content: "\25B8\00a0"; color: var(--accent); font-style: normal; }
+@media (min-width: 1100px) and (max-height: 860px) {
+  :root[data-skin="alt"] body.toronto .cx-title h1 { font-size: 29px; }
+  :root[data-skin="alt"] body.toronto .cx-kpi-v { font-size: 18px; }
+  :root[data-skin="alt"] .db-head { padding: 7px 14px 6px; }
+  :root[data-skin="alt"] .db-head b { font-size: 21px; }
+  :root[data-skin="alt"] .db-head small { font-size: 11px; }
+  :root[data-skin="alt"] .db-bullet { width: 28px; height: 28px; font-size: 17px; }
+  :root[data-skin="alt"] .db-clock { font-size: 20px; padding: 3px 8px; }
+  :root[data-skin="alt"] .db-cols { padding-top: 5px; padding-bottom: 4px; }
+  :root[data-skin="alt"] body.toronto .db-board .day { padding-top: 3px; padding-bottom: 3px; }
+  :root[data-skin="alt"] body.toronto .db-board .day .dname { font-size: 15px; }
+  :root[data-skin="alt"] body.toronto .db-board .day .riders { font-size: 19px; }
+  :root[data-skin="alt"] body.toronto .db-board .day .crowd { font-size: 13px; }
+  :root[data-skin="alt"] .db-tag, :root[data-skin="alt"] .db-tick-run { padding-top: 6px; padding-bottom: 5px; }
+  :root[data-skin="alt"] body.toronto .cx-tile-head { padding: 7px 12px 6px; margin: -12px -14px 0; }
+  :root[data-skin="alt"] body.toronto .cx-tk:first-child b { font-size: 26px; }
+}
 
 /* ================================================================== tablet / mobile */
-@media (max-width: 1100px) {
+@media (max-width: 1240px) {
   :root[data-skin="alt"] .db-cols,
-  :root[data-skin="alt"] body.toronto .db-board .day { grid-template-columns: 170px 104px 120px 104px 140px minmax(0, 1fr); column-gap: 12px; }
-  :root[data-skin="alt"] body.toronto .db-board .day .dname { font-size: 16.5px; }
+  :root[data-skin="alt"] body.toronto .db-board .day { grid-template-columns: 160px 100px 112px 104px 132px minmax(0, 1fr); column-gap: 12px; }
+}
+@media (max-width: 1099.98px) {
+  :root[data-skin="alt"] body.toronto .cx-nav { box-shadow: none; border-bottom: 4px solid #2a2b2f; background: var(--db-sign); }
+  :root[data-skin="alt"] body.toronto .cx-topic { padding: 6px 12px 6px 6px; font-size: 14px; }
+  :root[data-skin="alt"] body.toronto .cx-group.active > .cx-topic { box-shadow: inset 0 -3px 0 var(--trim); }
+  :root[data-skin="alt"] body.toronto .cx-dot { width: 20px; height: 20px; font-size: 12px; }
+  :root[data-skin="alt"] body.toronto .cx-subtabs { border-radius: 0; background: var(--db-sign); border-color: var(--db-sign); }
+  :root[data-skin="alt"] body.toronto .cx-subtabs a { border-radius: 0; color: #a8a69c; font: 700 13px/1.2 var(--db-cond); letter-spacing: 0.08em; text-transform: uppercase; }
+  :root[data-skin="alt"] body.toronto .cx-subtabs a[aria-current="page"] { background: var(--trim); color: var(--trim-ink); box-shadow: none; }
+  :root[data-skin="alt"] body.toronto .cx-drawer { border-left: 0; border-radius: 0; border-top: 2px solid var(--db-sign); }
+  :root[data-skin="alt"] body.toronto .panel { border-left: 0; border-top: 2px solid var(--db-sign); }
 }
 @media (max-width: 860px) {
   :root[data-skin="alt"] .db-cols { display: none; }
@@ -442,8 +578,7 @@
   :root[data-skin="alt"] .db-strip-in { gap: 3px 14px; font-size: 10.5px; padding-top: 6px; padding-bottom: 6px; }
   :root[data-skin="alt"] .db-strip b { font-size: 12px; }
   :root[data-skin="alt"] .db-asof { margin-left: 0; }
-  :root[data-skin="alt"] body.toronto .hero { padding-top: 28px; }
-  :root[data-skin="alt"] body.toronto .eyebrow { font-size: 18px; }
+  :root[data-skin="alt"] body.toronto .cx-title h1 { font-size: 28px; }
   :root[data-skin="alt"] .db-board { margin-left: 4px; margin-right: 4px; outline-width: 4px; }
   :root[data-skin="alt"] .db-head { padding: 10px 12px 8px; }
   :root[data-skin="alt"] .db-head b { font-size: 19px; }
@@ -457,13 +592,15 @@
   :root[data-skin="alt"] body.toronto .db-board .day[aria-pressed="true"]::before { left: 5px; border-left-width: 7px; }
   :root[data-skin="alt"] .db-ticker { font-size: 11.5px; }
   :root[data-skin="alt"] body.toronto .card { padding: 14px; }
-  :root[data-skin="alt"] body.toronto .card > .card-title:first-child { margin: -14px -14px 10px; padding: 8px 14px 6px; }
+  :root[data-skin="alt"] body.toronto .card > .cx-card-title:first-child { margin: -14px -14px 10px; padding: 8px 14px 6px; }
+  :root[data-skin="alt"] body.toronto .cx-tile-name { font-size: 20px; }
+  :root[data-skin="alt"] body.toronto .cx-dstats.four { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 /* ================================================================== motion */
 @media (prefers-reduced-motion: reduce) {
   :root[data-skin="alt"] body.toronto .topbar::after { display: none; }
-  :root[data-skin="alt"] .db-dot, :root[data-skin="alt"] body.toronto .side-title::before { animation: none; }
+  :root[data-skin="alt"] .db-dot, :root[data-skin="alt"] body.toronto .side-title::before, :root[data-skin="alt"] body.toronto .cx-tile-live::before { animation: none; }
   :root[data-skin="alt"] .db-tick-run { animation: none; }
   :root[data-skin="alt"] .db-tick-run span + span { display: none; }
 }

@@ -1,5 +1,6 @@
-// "Departure Board" skin extras for Toronto City Pulse: a station PA live strip, a Solari split-flap ferry board
-// with a service-notice ticker, a TTC-trim basemap tint and a footer flavour line.
+// "Departure Board" skin extras for Toronto City Pulse: a station PA live strip under the top bar, a Solari split-flap
+// ferry board (the ferry topic's "This week" view) with a service-notice ticker, a TTC-trim basemap tint and a flavour
+// line at the foot of the left rail.
 // Everything here exists only while the skin is active (data-skin="alt" on <html>) and is removed when it is switched off.
 // It only reads data main.js already loaded, handed over through pulse().
 
@@ -62,8 +63,8 @@ function build() {
   days.before(board);
   board.append(head, cols, days, tick);
 
-  // footer flavour
-  const foot = document.querySelector("footer.site .wrap");
+  // footer flavour, at the foot of the left rail
+  const foot = document.querySelector(".cx-foot");
   const flav = h("p", "db-flavour", "Please stand clear of the doors. Mind the gap between the dock and the ferry.");
   flav.setAttribute("aria-hidden", "true");
   foot?.append(flav);
